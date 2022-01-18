@@ -1,5 +1,12 @@
 import { Injectable, HttpException } from '@nestjs/common';
-import { readdirSync, statSync, existsSync, rmdirSync, unlinkSync } from 'fs';
+import {
+  readdirSync,
+  statSync,
+  existsSync,
+  rmdirSync,
+  unlinkSync,
+  readFileSync,
+} from 'fs';
 import { execSync, exec } from 'child_process';
 import { join } from 'path';
 import { json } from '@/utils';
@@ -19,6 +26,22 @@ export class ProjectService {
       existsSync(join(dir, 'duxapp.config.js'))
     );
   }
+  getVersion(name: string) {
+    const buildGradle = readFileSync(
+      join(config.rootDir, name, 'android', 'app', 'build.gradle'),
+      { encoding: 'utf8' },
+    );
+    return {
+      android: {
+        code: +buildGradle.match(/versionCode (\d{1,})/)[1],
+        name: buildGradle.match(/versionName "([\d.]{1,})"/)[1],
+      },
+      ios: {
+        code: 1,
+        name: '1.0.0',
+      },
+    };
+  }
   list() {
     return readdirSync(config.rootDir)
       .filter((item) => this.isProject(item))
@@ -26,6 +49,7 @@ export class ProjectService {
         return {
           name,
           status: this.getStatus(name),
+          version: this.getVersion(name),
         };
       });
   }
