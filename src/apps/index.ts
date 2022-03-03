@@ -1,5 +1,5 @@
+import { duxNestAppInstall } from '@/duxnest';
 import unpack from './unpack';
+import index from './index/index';
 
-export const controllers = [...unpack.controllers];
-
-export const services = [...unpack.services];
+duxNestAppInstall(unpack, index);

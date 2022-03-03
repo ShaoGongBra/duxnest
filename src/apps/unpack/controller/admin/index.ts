@@ -1,5 +1,5 @@
 import { Get, Param } from '@nestjs/common';
-import { Controller } from '@/utils';
+import { Controller } from '@/duxnest';
 
 @Controller()
 export class UnpackAdminController {

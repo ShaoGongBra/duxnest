@@ -11,7 +11,10 @@
     "outDir": "./dist",
     "paths": {
       "@/*": [
-        "./src/*"
+        "./src/*",
+      ],
+      "app/*": [
+        "./src/apps/*"
       ]
     },
     "baseUrl": "./",

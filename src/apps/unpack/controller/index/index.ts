@@ -1,15 +1,15 @@
-import { Get, Post, Param, Body, Delete } from '@nestjs/common';
-import { Controller } from '@/utils';
-import { ProjectService } from '../../service/project';
+import { Get, Post, Param, Body, Delete, Version } from '@nestjs/common';
+import { Controller } from '@/duxnest';
+import { ProjectService } from 'app/unpack/service/project';
 
 @Controller()
 export class UnpackController {
-  constructor(private readonly projectService: ProjectService) { }
+  constructor(private readonly projectService: ProjectService) {}
   /**
    * 项目列表
    */
   @Get('list')
-  async list() {
+  list() {
     return this.projectService.list();
   }
   @Delete('delete/:name')

@@ -9,7 +9,6 @@ import {
 } from 'fs';
 import { execSync, exec } from 'child_process';
 import { join } from 'path';
-import { json } from '@/utils';
 import config from '../config/project';
 
 @Injectable()
@@ -102,7 +101,11 @@ export class ProjectService {
     return this.cdExec(name) + 'git pull && yarn && ';
   }
   projectExec(name: string) {
-    const packageJson = json.get(join(config.rootDir, name, 'package.json'));
+    const packageJson = JSON.parse(
+      readFileSync(join(config.rootDir, name, 'package.json'), {
+        encoding: 'utf8',
+      }),
+    );
     // 判断项目类型 执行不同的命令
     if (packageJson.dependencies['@tarojs/taro'].startsWith('2.')) {
       return `yarn build:rn && cd android && gradlew assembleRelease`;
