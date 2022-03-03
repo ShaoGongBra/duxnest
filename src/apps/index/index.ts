@@ -2,7 +2,7 @@ import { IndexController } from './controller/index/index';
 
 export default {
   controllers: [IndexController],
-  services: [],
+  providers: [],
   middlewares: [],
   imports: [],
 };

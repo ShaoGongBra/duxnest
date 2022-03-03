@@ -11,7 +11,7 @@ import middlewares from './middleware';
 
 export default {
   controllers: [UnpackAdminController, UnpackController],
-  services: [ProjectService],
+  providers: [ProjectService],
   middlewares,
   imports: [TypeOrmModule.forFeature([UnpackConfig])],
 };

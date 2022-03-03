@@ -12,7 +12,7 @@ import { AppService } from './app.service';
 export const modules = {
   imports: [],
   controllers: [],
-  services: [],
+  providers: [],
   middlewares: [],
 };
 
@@ -32,7 +32,15 @@ export const appModule = () => {
         limit: 360,
       }),
       ServeStaticModule.forRoot({
-        rootPath: join(process.cwd(), 'client'),
+        rootPath: join(process.cwd(), 'dist/apps/unpack/static'),
+        serveRoot: 'unpack/static',
+        serveStaticOptions: {
+          redirect: false,
+        },
+      }),
+      ServeStaticModule.forRoot({
+        rootPath: join(process.cwd(), 'dist/apps/index/static'),
+        serveRoot: 'index/static',
         serveStaticOptions: {
           redirect: false,
         },
@@ -52,7 +60,7 @@ export const appModule = () => {
         provide: APP_GUARD,
         useClass: ThrottlerGuard,
       },
-      ...modules.services,
+      ...modules.providers,
     ],
   })(AppModule);
   return AppModule;
