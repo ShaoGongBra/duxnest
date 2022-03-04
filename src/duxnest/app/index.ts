@@ -7,8 +7,8 @@ import {
 import fastifyCookie from 'fastify-cookie';
 import fastifyCsrf from 'fastify-csrf';
 import { fastifyHelmet } from 'fastify-helmet';
+import { join } from 'path';
 import { appModule, modules } from './app.module';
-
 export const duxNestRun = async () => {
   const app = await NestFactory.create<NestFastifyApplication>(
     appModule(),
@@ -27,6 +27,13 @@ export const duxNestRun = async () => {
     type: VersioningType.HEADER,
     header: 'Api-Version',
     defaultVersion: VERSION_NEUTRAL,
+  });
+  /** 模板引擎 */
+  app.setViewEngine({
+    engine: {
+      handlebars: require('handlebars'),
+    },
+    templates: join(process.cwd(), 'dist', 'apps'),
   });
   await app.listen(3000, '0.0.0.0');
 };

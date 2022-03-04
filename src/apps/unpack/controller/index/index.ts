@@ -1,10 +1,15 @@
-import { Get, Post, Param, Body, Delete, Version } from '@nestjs/common';
-import { Controller } from '@/duxnest';
+import { Get, Post, Param, Body, Delete } from '@nestjs/common';
+import { Controller, Render } from '@/duxnest';
 import { ProjectService } from 'app/unpack/service/project';
 
 @Controller()
 export class UnpackController {
-  constructor(private readonly projectService: ProjectService) {}
+  constructor(private readonly projectService: ProjectService) { }
+  @Get()
+  @Render('index')
+  index() {
+    return { message: '这是消息' };
+  }
   /**
    * 项目列表
    */

@@ -1,11 +1,12 @@
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { APP_GUARD, APP_FILTER } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { ServeStaticModule } from '@nestjs/serve-static';
+import { ServeStaticModule } from '../static';
 import { join } from 'path';
 import { HttpExceptionFilter } from '../filter';
 import { ConfigModule } from '../config';
 import { DatabaseModule } from '../database';
+import { registerAppsStatic } from '../static';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -31,20 +32,7 @@ export const appModule = () => {
         ttl: 60,
         limit: 360,
       }),
-      ServeStaticModule.forRoot({
-        rootPath: join(process.cwd(), 'dist/apps/unpack/static'),
-        serveRoot: 'unpack/static',
-        serveStaticOptions: {
-          redirect: false,
-        },
-      }),
-      ServeStaticModule.forRoot({
-        rootPath: join(process.cwd(), 'dist/apps/index/static'),
-        serveRoot: 'index/static',
-        serveStaticOptions: {
-          redirect: false,
-        },
-      }),
+      ServeStaticModule.forRoot(...registerAppsStatic()),
       ConfigModule,
       DatabaseModule(),
       ...modules.imports,
