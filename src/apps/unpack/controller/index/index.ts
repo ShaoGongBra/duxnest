@@ -8,7 +8,7 @@ export class UnpackController {
   @Get()
   @Render('index')
   index() {
-    return { message: '这是消息' };
+    return {};
   }
   /**
    * 项目列表
