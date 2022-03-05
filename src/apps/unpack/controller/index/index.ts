@@ -43,11 +43,20 @@ export class UnpackController {
     return '打包命令执行成功';
   }
   /**
+   * ios打包
+   * @param name 项目
+   */
+  @Get('ios/:name')
+  ios(@Param('name') name: string) {
+    this.projectService.ios(name);
+    return '打包命令执行成功';
+  }
+  /**
    * 查看某个项目的打包状态
    * @param name 项目
    */
-  @Get('androidStatus/:id?')
-  androidStatus(@Param('name') name?: string) {
+  @Get('status/:id?')
+  status(@Param('name') name?: string) {
     return this.projectService.getStatus(name);
   }
 }
