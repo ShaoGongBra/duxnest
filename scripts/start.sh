@@ -1,0 +1,1 @@
+cd Documents/project/duxnest/ && yarn start
