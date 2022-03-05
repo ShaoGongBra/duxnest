@@ -223,7 +223,7 @@ export class ProjectService {
     this.endActive(name, os);
   }
   async upload(name: string, os: string) {
-    this.startActive(name, os, '开始上传蒲公英');
+    this.startActive(name, os, '开始上传AppStore');
     await this.exec(this.cdExec(name) + 'yarn upload-ios');
     this.endActive(name, os);
   }
