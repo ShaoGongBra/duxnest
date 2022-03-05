@@ -17,25 +17,54 @@ const OS = {
   ios: 'ios',
 };
 
-const dateToStr = (formatStr = 'yyyy-MM-dd HH:mm:ss', date = new Date()) => {
+const dateToStr = (
+  formatStr = 'yyyy-MM-dd HH:mm:ss',
+  date: Date = new Date(),
+) => {
   let str = formatStr;
   const Week = ['日', '一', '二', '三', '四', '五', '六'];
-  str = str.replace(/yyyy|YYYY/, date.getFullYear());
-  str = str.replace(/yy|YY/, (date.getYear() % 100) > 9 ? (date.getYear() % 100).toString() : '0' + (date.getYear() % 100));
-  str = str.replace(/MM/, date.getMonth() > 8 ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1));
-  str = str.replace(/M/g, (date.getMonth() + 1));
+  str = str.replace(/yyyy|YYYY/, '' + date.getFullYear());
+  str = str.replace(
+    /yy|YY/,
+    date.getFullYear() % 100 > 9
+      ? (date.getFullYear() % 100).toString()
+      : '0' + (date.getFullYear() % 100),
+  );
+  str = str.replace(
+    /MM/,
+    date.getMonth() > 8
+      ? '' + date.getMonth() + 1
+      : '0' + (date.getMonth() + 1),
+  );
+  str = str.replace(/M/g, '' + date.getMonth() + 1);
   str = str.replace(/w|W/g, Week[date.getDay()]);
 
-  str = str.replace(/dd|DD/, date.getDate() > 9 ? date.getDate().toString() : '0' + date.getDate());
-  str = str.replace(/d|D/g, date.getDate());
+  str = str.replace(
+    /dd|DD/,
+    date.getDate() > 9 ? date.getDate().toString() : '0' + date.getDate(),
+  );
+  str = str.replace(/d|D/g, '' + date.getDate());
 
-  str = str.replace(/hh|HH/, date.getHours() > 9 ? date.getHours().toString() : '0' + date.getHours());
-  str = str.replace(/h|H/g, date.getHours());
-  str = str.replace(/mm/, date.getMinutes() > 9 ? date.getMinutes().toString() : '0' + date.getMinutes());
-  str = str.replace(/m/g, date.getMinutes());
+  str = str.replace(
+    /hh|HH/,
+    date.getHours() > 9 ? date.getHours().toString() : '0' + date.getHours(),
+  );
+  str = str.replace(/h|H/g, '' + date.getHours());
+  str = str.replace(
+    /mm/,
+    date.getMinutes() > 9
+      ? date.getMinutes().toString()
+      : '0' + date.getMinutes(),
+  );
+  str = str.replace(/m/g, '' + date.getMinutes());
 
-  str = str.replace(/ss|SS/, date.getSeconds() > 9 ? date.getSeconds().toString() : '0' + date.getSeconds());
-  str = str.replace(/s|S/g, date.getSeconds());
+  str = str.replace(
+    /ss|SS/,
+    date.getSeconds() > 9
+      ? date.getSeconds().toString()
+      : '0' + date.getSeconds(),
+  );
+  str = str.replace(/s|S/g, '' + date.getSeconds());
 
   return str;
 };
@@ -288,8 +317,9 @@ export class ProjectService {
     if (packageJson.dependencies['@tarojs/taro'].startsWith('2.')) {
       buildExec = `cd android && gradlew assembleRelease`;
     } else {
-      buildExec = `yarn build:${os}${os === OS.ios ? ' && yarn export:ios' : ''
-        }`;
+      buildExec = `yarn build:${os}${
+        os === OS.ios ? ' && yarn export:ios' : ''
+      }`;
     }
     this.startActive(name, os, '开始打包安装包');
     await this.exec(`${this.cdExec(name)}${buildExec}`);
