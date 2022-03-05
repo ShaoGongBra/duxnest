@@ -52,6 +52,26 @@ export class UnpackController {
     return '打包命令执行成功';
   }
   /**
+   * setting
+   * @param name 项目
+   */
+  @Post('setting')
+  async setting(
+    @Body()
+    params: {
+      name: string;
+      os: keyof { android; ios };
+      version: string;
+      code: number;
+    },
+  ) {
+    await this.projectService.setVersion(params.name, params.os, {
+      version: params.version,
+      code: params.code,
+    });
+    return 'ok';
+  }
+  /**
    * 查看某个项目的打包状态
    * @param name 项目
    */

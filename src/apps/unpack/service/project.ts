@@ -17,6 +17,29 @@ const OS = {
   ios: 'ios',
 };
 
+const dateToStr = (formatStr = 'yyyy-MM-dd HH:mm:ss', date = new Date()) => {
+  let str = formatStr;
+  const Week = ['日', '一', '二', '三', '四', '五', '六'];
+  str = str.replace(/yyyy|YYYY/, date.getFullYear());
+  str = str.replace(/yy|YY/, (date.getYear() % 100) > 9 ? (date.getYear() % 100).toString() : '0' + (date.getYear() % 100));
+  str = str.replace(/MM/, date.getMonth() > 8 ? (date.getMonth() + 1) : '0' + (date.getMonth() + 1));
+  str = str.replace(/M/g, (date.getMonth() + 1));
+  str = str.replace(/w|W/g, Week[date.getDay()]);
+
+  str = str.replace(/dd|DD/, date.getDate() > 9 ? date.getDate().toString() : '0' + date.getDate());
+  str = str.replace(/d|D/g, date.getDate());
+
+  str = str.replace(/hh|HH/, date.getHours() > 9 ? date.getHours().toString() : '0' + date.getHours());
+  str = str.replace(/h|H/g, date.getHours());
+  str = str.replace(/mm/, date.getMinutes() > 9 ? date.getMinutes().toString() : '0' + date.getMinutes());
+  str = str.replace(/m/g, date.getMinutes());
+
+  str = str.replace(/ss|SS/, date.getSeconds() > 9 ? date.getSeconds().toString() : '0' + date.getSeconds());
+  str = str.replace(/s|S/g, date.getSeconds());
+
+  return str;
+};
+
 @Injectable()
 export class ProjectService {
   /**
@@ -51,15 +74,25 @@ export class ProjectService {
       },
     };
   }
-  async setVersion(name: string, os: string, version: string, code: number) {
+  async setVersion(
+    name: string,
+    os: string,
+    setting: {
+      version: string;
+      code: number;
+    },
+  ) {
     if (os === OS.android) {
       const file = join(config.rootDir, name, 'android', 'app', 'build.gradle');
       const buildGradle = readFileSync(file, { encoding: 'utf8' });
       writeFileSync(
         file,
         buildGradle
-          .replace(/versionCode \d{1,}/, `versionCode ${code}`)
-          .replace(/versionName "[\d.]{1,}"/, `versionName "${version}"`),
+          .replace(/versionCode \d{1,}/, `versionCode ${setting.code}`)
+          .replace(
+            /versionName "[\d.]{1,}"/,
+            `versionName "${setting.version}"`,
+          ),
         {
           encoding: 'utf-8',
         },
@@ -82,12 +115,12 @@ export class ProjectService {
         file,
         xcodeproj
           .replace(
-            /CURRENT_PROJECT_VERSION = \d{1,};/,
-            `CURRENT_PROJECT_VERSION = ${code};`,
+            /CURRENT_PROJECT_VERSION = \d{1,};/g,
+            `CURRENT_PROJECT_VERSION = ${setting.code};`,
           )
           .replace(
-            /MARKETING_VERSION = [\d.]{1,};/,
-            `MARKETING_VERSION = ${version};`,
+            /MARKETING_VERSION = [\d.]{1,};/g,
+            `MARKETING_VERSION = ${setting.version};`,
           ),
         {
           encoding: 'utf-8',
@@ -181,7 +214,11 @@ export class ProjectService {
     return status;
   }
   log(log = '') {
-    return Date.now() + ': ' + log;
+    return dateToStr() + ': ' + log;
+  }
+  clearLog(name: string, os: string) {
+    const status = this.getStatus(name);
+    status[os].log = [];
   }
   startActive(name: string, os: string, log = '') {
     const status = this.getStatus(name);
@@ -203,7 +240,8 @@ export class ProjectService {
   errorActive(name: string, os: string, err: any) {
     const status = this.getStatus(name);
     status[os].status = 'error';
-    status[os].message = err?.message || err;
+    status[os].log.push(this.log(err?.message || err));
+    status[os].message = 'build error';
   }
   exec(...cmds: string[]) {
     return new Promise((resolve, reject) => {
@@ -227,6 +265,11 @@ export class ProjectService {
   async base(name: string, os: string) {
     this.startActive(name, os, '开始代码同步');
     await this.exec(this.cdExec(name) + 'git pull && yarn');
+    this.endActive(name, os);
+  }
+  async podInstall(name: string, os: string) {
+    this.startActive(name, os, '开始 pod install');
+    await this.exec(this.cdExec(name) + 'yarn pod-install');
     this.endActive(name, os);
   }
   async buildCode(name: string, os: string) {
@@ -254,7 +297,17 @@ export class ProjectService {
   }
   async codepush(name: string, os: string) {
     this.startActive(name, os, '开始上传热更新代码');
-    await this.exec(`${this.cdExec(name)}yarn codepush:${os}`);
+    try {
+      await this.exec(`${this.cdExec(name)}yarn codepush:${os}`);
+    } catch (error) {
+      if (
+        !~error?.message.indexOf(
+          "The uploaded package was not released because it is identical to the contents of the specified deployment's current release",
+        )
+      ) {
+        throw error;
+      }
+    }
     this.endActive(name, os);
   }
   async prger(name: string, os: string) {
@@ -282,6 +335,7 @@ export class ProjectService {
   }
   async android(name: string) {
     try {
+      this.clearLog(name, OS.android);
       await this.base(name, OS.android);
       await this.buildCode(name, OS.android);
       await this.codepush(name, OS.android);
@@ -294,7 +348,9 @@ export class ProjectService {
   }
   async ios(name: string) {
     try {
+      this.clearLog(name, OS.ios);
       await this.base(name, OS.ios);
+      await this.podInstall(name, OS.ios);
       await this.buildCode(name, OS.ios);
       await this.codepush(name, OS.ios);
       await this.build(name, OS.ios);
