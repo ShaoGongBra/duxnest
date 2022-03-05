@@ -1,4 +1,4 @@
-import { Get, Post, Param, Body, Delete } from '@nestjs/common';
+import { Get, Post, Param, Body, Delete, Header } from '@nestjs/common';
 import { Controller, Render } from '@/duxnest';
 import { ProjectService } from 'app/unpack/service/project';
 
@@ -6,6 +6,9 @@ import { ProjectService } from 'app/unpack/service/project';
 export class UnpackController {
   constructor(private readonly projectService: ProjectService) { }
   @Get()
+  @Header('Cross-Origin-Opener-Policy', 'unsafe-none')
+  @Header('Origin-Agent-Cluster', '?0')
+  @Header('Content-Security-Policy', '')
   @Render('index')
   index() {
     return {};

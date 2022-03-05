@@ -1,3 +1,3 @@
 export default {
-  rootDir: 'D:\\project',
+  rootDir: '/Users/admin/Documents/project',
 };
