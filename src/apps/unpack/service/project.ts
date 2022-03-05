@@ -1,6 +1,7 @@
 import { Injectable, HttpException } from '@nestjs/common';
 import {
   readdirSync,
+  writeFileSync,
   statSync,
   existsSync,
   rmdirSync,
@@ -35,16 +36,69 @@ export class ProjectService {
       join(config.rootDir, name, 'android', 'app', 'build.gradle'),
       { encoding: 'utf8' },
     );
+    const xcodeproj = readFileSync(
+      join(config.rootDir, name, 'ios', 'duxapp.xcodeproj', 'project.pbxproj'),
+      { encoding: 'utf8' },
+    );
     return {
       android: {
         code: +buildGradle.match(/versionCode (\d{1,})/)[1],
         name: buildGradle.match(/versionName "([\d.]{1,})"/)[1],
       },
       ios: {
-        code: 1,
-        name: '1.0.0',
+        code: +xcodeproj.match(/CURRENT_PROJECT_VERSION = (\d{1,});/)[1],
+        name: xcodeproj.match(/MARKETING_VERSION = ([\d.]{1,});/)[1],
       },
     };
+  }
+  async setVersion(name: string, os: string, version: string, code: number) {
+    if (os === OS.android) {
+      const file = join(config.rootDir, name, 'android', 'app', 'build.gradle');
+      const buildGradle = readFileSync(file, { encoding: 'utf8' });
+      writeFileSync(
+        file,
+        buildGradle
+          .replace(/versionCode \d{1,}/, `versionCode ${code}`)
+          .replace(/versionName "[\d.]{1,}"/, `versionName "${version}"`),
+        {
+          encoding: 'utf-8',
+        },
+      );
+      await this.exec(
+        `${this.cdExec(
+          name,
+        )}git add . && git commit -m "android version update" && git push`,
+      );
+    } else {
+      const file = join(
+        config.rootDir,
+        name,
+        'ios',
+        'duxapp.xcodeproj',
+        'project.pbxproj',
+      );
+      const xcodeproj = readFileSync(file, { encoding: 'utf8' });
+      writeFileSync(
+        file,
+        xcodeproj
+          .replace(
+            /CURRENT_PROJECT_VERSION = \d{1,};/,
+            `CURRENT_PROJECT_VERSION = ${code};`,
+          )
+          .replace(
+            /MARKETING_VERSION = [\d.]{1,};/,
+            `MARKETING_VERSION = ${version};`,
+          ),
+        {
+          encoding: 'utf-8',
+        },
+      );
+      await this.exec(
+        `${this.cdExec(
+          name,
+        )}git add . && git commit -m "ios version update" && git push`,
+      );
+    }
   }
   list() {
     return readdirSync(config.rootDir)
@@ -191,9 +245,8 @@ export class ProjectService {
     if (packageJson.dependencies['@tarojs/taro'].startsWith('2.')) {
       buildExec = `cd android && gradlew assembleRelease`;
     } else {
-      buildExec = `yarn build:${os}${
-        os === OS.ios ? ' && yarn export:ios' : ''
-      }`;
+      buildExec = `yarn build:${os}${os === OS.ios ? ' && yarn export:ios' : ''
+        }`;
     }
     this.startActive(name, os, '开始打包安装包');
     await this.exec(`${this.cdExec(name)}${buildExec}`);
