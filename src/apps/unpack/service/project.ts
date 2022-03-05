@@ -177,7 +177,7 @@ export class ProjectService {
   }
   async buildCode(name: string, os: string) {
     this.startActive(name, os, '开始编译项目');
-    await this.exec(`${this.cdExec(name)}yarn build:rn`);
+    await this.exec(`${this.cdExec(name)}yarn build:rn-${os}`);
     this.endActive(name, os);
   }
   async build(name: string, os: string) {
