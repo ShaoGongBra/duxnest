@@ -395,4 +395,29 @@ export class ProjectService {
       this.errorActive(name, OS.ios, error);
     }
   }
+  logo(name: string, os: string) {
+    if (os === OS.android) {
+      return join(
+        config.rootDir,
+        name,
+        'android',
+        'app',
+        'src',
+        'main',
+        'res',
+        'mipmap-hdpi',
+        'ic_launcher.png',
+      );
+    } else {
+      return join(
+        config.rootDir,
+        name,
+        'ios',
+        'duxapp',
+        'Images.xcassets',
+        'AppIcon.appiconset',
+        'icon-40@2x.png',
+      );
+    }
+  }
 }
