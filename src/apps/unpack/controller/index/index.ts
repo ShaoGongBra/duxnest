@@ -1,4 +1,13 @@
-import { Get, Post, Param, Body, Delete, Header } from '@nestjs/common';
+import {
+  Get,
+  Post,
+  Param,
+  Body,
+  Delete,
+  Header,
+  Response,
+} from '@nestjs/common';
+import { createReadStream } from 'fs';
 import { Controller, Render } from '@/duxnest';
 import { ProjectService } from 'app/unpack/service/project';
 
@@ -78,5 +87,23 @@ export class UnpackController {
   @Get('status/:id?')
   status(@Param('name') name?: string) {
     return this.projectService.getStatus(name);
+  }
+  /**
+   * 项目logo
+   * @param name 项目
+   * @param os 系统 android 或者 ios
+   */
+  @Get('logo/:name/:os')
+  logo(
+    @Response({ passthrough: true }) res,
+    @Param('name') name: string,
+    @Param('os') os: string,
+  ) {
+    const file = createReadStream(this.projectService.logo(name, os));
+    res.type('image/png');
+    res.headers({
+      'Cross-Origin-Resource-Policy': 'sme-site',
+    });
+    res.send(file);
   }
 }
