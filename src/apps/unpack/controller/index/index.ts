@@ -13,7 +13,7 @@ import { ProjectService } from 'app/unpack/service/project';
 
 @Controller()
 export class UnpackController {
-  constructor(private readonly projectService: ProjectService) { }
+  constructor(private readonly projectService: ProjectService) {}
   @Get()
   @Header('Cross-Origin-Opener-Policy', 'unsafe-none')
   @Header('Origin-Agent-Cluster', '?0')
