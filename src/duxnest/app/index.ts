@@ -6,9 +6,10 @@ import {
 } from '@nestjs/platform-fastify';
 import fastifyCookie from 'fastify-cookie';
 import fastifyCsrf from 'fastify-csrf';
-import { fastifyHelmet } from 'fastify-helmet';
+import fastifyHelmet from '@fastify/helmet';
 import { join } from 'path';
 import { appModule, modules } from './app.module';
+
 export const duxNestRun = async () => {
   const app = await NestFactory.create<NestFastifyApplication>(
     appModule(),

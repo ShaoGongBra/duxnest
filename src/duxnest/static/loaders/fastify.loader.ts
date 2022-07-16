@@ -18,9 +18,9 @@ export class FastifyLoader extends AbstractLoader {
   ) {
     const app = httpAdapter.getInstance();
     const fastifyStatic = loadPackage(
-      'fastify-static',
+      '@fastify/static',
       'ServeStaticModule',
-      () => require('fastify-static'),
+      () => require('@fastify/static'),
     );
 
     optionsArr.forEach((options) => {
