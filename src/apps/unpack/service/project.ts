@@ -323,8 +323,9 @@ export class ProjectService {
     if (packageJson.dependencies['@tarojs/taro'].startsWith('2.')) {
       buildExec = `cd android && gradlew assembleRelease`;
     } else {
-      buildExec = `yarn build:${os}${os === OS.ios ? ' && yarn export:ios' : ''
-        }`;
+      buildExec = `yarn build:${os}${
+        os === OS.ios ? ' && yarn export:ios' : ''
+      }`;
     }
     this.startActive(name, os, '开始打包安装包');
     await this.exec(`${this.cdExec(name)}${buildExec}`);

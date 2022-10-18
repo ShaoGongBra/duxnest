@@ -8,7 +8,7 @@
         "watchAssets": true
       },
       {
-        "include": "apps/**/view/**/*.*",
+        "include": "apps/**/view/**/*.hbs",
         "watchAssets": true
       }
     ]
