@@ -11,7 +11,9 @@ module.exports = {
   ],
   root: true,
   env: {
-    node: true,
+    // es6: true, // 启用 ES6 语法支持以及新的 ES6 全局变量或类型
+    node: true, // Node.js 全局变量和 Node.js 作用域
+    // browser: true, // 浏览器全局变量
     jest: true,
   },
   ignorePatterns: ['.eslintrc.js'],
@@ -20,5 +22,6 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'no-unused-vars': [2]
   },
 };

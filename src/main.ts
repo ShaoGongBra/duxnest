@@ -1,5 +1,5 @@
-import { duxNestRun } from '@/duxnest';
+import { duxNestRun } from '@/duxnest'
 
-import './apps';
+import './apps'
 
-duxNestRun();
+duxNestRun()

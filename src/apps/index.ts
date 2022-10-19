@@ -1,5 +1,5 @@
-import { duxNestAppInstall } from '@/duxnest';
-import unpack from './unpack';
-import index from './index/index';
+import { duxNestAppInstall } from '@/duxnest'
+import unpack from './unpack'
+import index from './index/index'
 
-duxNestAppInstall(unpack, index);
+duxNestAppInstall(unpack, index)

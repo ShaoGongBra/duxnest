@@ -1,15 +1,7 @@
-import {
-  Get,
-  Post,
-  Param,
-  Body,
-  Delete,
-  Header,
-  Response,
-} from '@nestjs/common';
-import { createReadStream } from 'fs';
-import { Controller, Render } from '@/duxnest';
-import { ProjectService } from 'app/unpack/service/project';
+import { Get, Post, Param, Body, Delete, Header, Response } from '@nestjs/common'
+import { createReadStream } from 'fs'
+import { Controller, Render } from '@/duxnest'
+import { ProjectService } from 'app/unpack/service/project'
 
 @Controller()
 export class UnpackController {
@@ -20,27 +12,27 @@ export class UnpackController {
   @Header('Content-Security-Policy', '')
   @Render('index')
   index() {
-    return {};
+    return {}
   }
   /**
    * 项目列表
    */
   @Get('list')
   list() {
-    return this.projectService.list();
+    return this.projectService.list()
   }
   @Delete('delete/:name')
   delete(@Param('name') name: string) {
-    this.projectService.delete(name);
-    return name + ' 删除成功';
+    this.projectService.delete(name)
+    return name + ' 删除成功'
   }
   /**
    * 项目列表
    */
   @Post('add')
   add(@Body() { url, name }: { url: string; name?: string }) {
-    this.projectService.add(url, name);
-    return '创建成功';
+    this.projectService.add(url, name)
+    return '创建成功'
   }
   /**
    * 安卓打包
@@ -48,8 +40,8 @@ export class UnpackController {
    */
   @Get('android/:name')
   android(@Param('name') name: string) {
-    this.projectService.android(name);
-    return '打包命令执行成功';
+    this.projectService.android(name)
+    return '打包命令执行成功'
   }
   /**
    * ios打包
@@ -57,8 +49,8 @@ export class UnpackController {
    */
   @Get('ios/:name')
   ios(@Param('name') name: string) {
-    this.projectService.ios(name);
-    return '打包命令执行成功';
+    this.projectService.ios(name)
+    return '打包命令执行成功'
   }
   /**
    * setting
@@ -68,17 +60,17 @@ export class UnpackController {
   async setting(
     @Body()
     params: {
-      name: string;
-      os: keyof { android; ios };
-      version: string;
-      code: number;
-    },
+      name: string
+      os: keyof { android; ios }
+      version: string
+      code: number
+    }
   ) {
     await this.projectService.setVersion(params.name, params.os, {
       version: params.version,
-      code: params.code,
-    });
-    return 'ok';
+      code: params.code
+    })
+    return 'ok'
   }
   /**
    * 查看某个项目的打包状态
@@ -86,7 +78,7 @@ export class UnpackController {
    */
   @Get('status/:id?')
   status(@Param('name') name?: string) {
-    return this.projectService.getStatus(name);
+    return this.projectService.getStatus(name)
   }
   /**
    * 项目logo
@@ -94,16 +86,12 @@ export class UnpackController {
    * @param os 系统 android 或者 ios
    */
   @Get('logo/:name/:os')
-  logo(
-    @Response({ passthrough: true }) res,
-    @Param('name') name: string,
-    @Param('os') os: string,
-  ) {
-    const file = createReadStream(this.projectService.logo(name, os));
-    res.type('image/png');
+  logo(@Response({ passthrough: true }) res, @Param('name') name: string, @Param('os') os: string) {
+    const file = createReadStream(this.projectService.logo(name, os))
+    res.type('image/png')
     res.headers({
-      'Cross-Origin-Resource-Policy': 'sme-site',
-    });
-    res.send(file);
+      'Cross-Origin-Resource-Policy': 'sme-site'
+    })
+    res.send(file)
   }
 }

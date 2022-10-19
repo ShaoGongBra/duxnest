@@ -1,5 +1,5 @@
-import { Get } from '@nestjs/common';
-import { Controller } from '@/duxnest';
+import { Get } from '@nestjs/common'
+import { Controller } from '@/duxnest'
 
 @Controller()
 export class IndexController {
@@ -8,6 +8,6 @@ export class IndexController {
    */
   @Get()
   async index() {
-    return { message: '测试' };
+    return { message: '测试' }
   }
 }

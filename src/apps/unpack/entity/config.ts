@@ -1,19 +1,19 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm'
 
 @Entity()
 export class UnpackConfig {
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column()
-  firstName: string;
+  firstName: string
 
   @Column()
-  lastName: string;
+  lastName: string
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive: boolean
 
   @Column({ default: true })
-  status: boolean;
+  status: boolean
 }

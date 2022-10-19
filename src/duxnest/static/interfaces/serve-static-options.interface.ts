@@ -1,23 +1,23 @@
-import { Provider, Type } from '@nestjs/common';
-import { ModuleMetadata } from '@nestjs/common/interfaces';
+import { Provider, Type } from '@nestjs/common'
+import { ModuleMetadata } from '@nestjs/common/interfaces'
 
 export interface ServeStaticModuleOptions {
   /**
    * Static files root directory. Default: "client"
    */
-  rootPath?: string;
+  rootPath?: string
   /**
    * Path to render static app (concatenated with the `serveRoot` value). Default: * (wildcard - all paths). Note: `RegExp` is not supported by the `@nestjs/platform-fastify`.
    */
-  renderPath?: string | RegExp;
+  renderPath?: string | RegExp
   /**
    * Root path under which static app will be served. Default: ""
    */
-  serveRoot?: string;
+  serveRoot?: string
   /**
    * Paths to exclude when serving the static app. WARNING! Not supported by `fastify`. If you use `fastify`, you can exclude routes using regexp (set the `renderPath` to a regular expression) instead.
    */
-  exclude?: string[];
+  exclude?: string[]
   /**
    * Serve static options (static files)
    * Passed down to the underlying either `express.static` or `fastify-static.send`
@@ -27,7 +27,7 @@ export interface ServeStaticModuleOptions {
      * Enable or disable setting Cache-Control response header, defaults to true.
      * Disabling this will ignore the immutable and maxAge options.
      */
-    cacheControl?: boolean;
+    cacheControl?: boolean
 
     /**
      * Set how "dotfiles" are treated when encountered. A dotfile is a file or directory that begins with a dot (".").
@@ -39,17 +39,17 @@ export interface ServeStaticModuleOptions {
      * 'deny' Send a 403 for any request for a dotfile
      * 'ignore' Pretend like the dotfile does not exist and call next()
      */
-    dotfiles?: string;
+    dotfiles?: string
 
     /**
      * Enable or disable etag generation, defaults to true.
      */
-    etag?: boolean;
+    etag?: boolean
 
     /**
      * Enable or disable client setting errors fall-through as unhandled requests, defaults to true, otherwise forward a client error.
      */
-    fallthrough?: boolean;
+    fallthrough?: boolean
 
     /**
      * Set file extension fallbacks. When set, if a file is not found, the given extensions
@@ -57,7 +57,7 @@ export interface ServeStaticModuleOptions {
      * The first that exists will be served. Example: ['html', 'htm'].
      * The default value is false.
      */
-    extensions?: string[];
+    extensions?: string[]
 
     /**
      * Enable or disable the immutable directive in the Cache-Control response header.
@@ -65,29 +65,29 @@ export interface ServeStaticModuleOptions {
      * The immutable directive will prevent supported clients from making conditional
      * requests during the life of the maxAge option to check if the file has changed.
      */
-    immutable?: boolean;
+    immutable?: boolean
 
     /**
      * By default this module will send "index.html" files in response to a request on a directory.
      * To disable this set false or to supply a new index pass a string or an array in preferred order.
      */
-    index?: boolean | string | string[];
+    index?: boolean | string | string[]
 
     /**
      * Enable or disable Last-Modified header, defaults to true. Uses the file system's last modified value.
      */
-    lastModified?: boolean;
+    lastModified?: boolean
 
     /**
      * Provide a max-age in milliseconds for http caching, defaults to 0.
      * This can also be a string accepted by the ms module.
      */
-    maxAge?: number | string;
+    maxAge?: number | string
 
     /**
      * Redirect to trailing "/" when the pathname is a dir. Defaults to true.
      */
-    redirect?: boolean;
+    redirect?: boolean
 
     /**
      * Function to set custom headers on response. Alterations to the headers need to occur synchronously.
@@ -96,24 +96,19 @@ export interface ServeStaticModuleOptions {
      * path the file path that is being sent
      * stat the stat object of the file that is being sent
      */
-    setHeaders?: (res: any, path: string, stat: any) => any;
-  };
+    setHeaders?: (res: any, path: string, stat: any) => any
+  }
 }
 
 export interface ServeStaticModuleOptionsFactory {
-  createLoggerOptions():
-    | Promise<ServeStaticModuleOptions[]>
-    | ServeStaticModuleOptions[];
+  createLoggerOptions(): Promise<ServeStaticModuleOptions[]> | ServeStaticModuleOptions[]
 }
 
-export interface ServeStaticModuleAsyncOptions
-  extends Pick<ModuleMetadata, 'imports'> {
-  isGlobal?: boolean;
-  useExisting?: Type<ServeStaticModuleOptionsFactory>;
-  useClass?: Type<ServeStaticModuleOptionsFactory>;
-  useFactory?: (
-    ...args: any[]
-  ) => Promise<ServeStaticModuleOptions[]> | ServeStaticModuleOptions[];
-  inject?: any[];
-  extraProviders?: Provider[];
+export interface ServeStaticModuleAsyncOptions extends Pick<ModuleMetadata, 'imports'> {
+  isGlobal?: boolean
+  useExisting?: Type<ServeStaticModuleOptionsFactory>
+  useClass?: Type<ServeStaticModuleOptionsFactory>
+  useFactory?: (...args: any[]) => Promise<ServeStaticModuleOptions[]> | ServeStaticModuleOptions[]
+  inject?: any[]
+  extraProviders?: Provider[]
 }

@@ -1,29 +1,23 @@
-import {
-  DynamicModule,
-  Inject,
-  Module,
-  OnModuleInit,
-  Provider,
-} from '@nestjs/common';
-import { HttpAdapterHost } from '@nestjs/core';
+import { DynamicModule, Inject, Module, OnModuleInit, Provider } from '@nestjs/common'
+import { HttpAdapterHost } from '@nestjs/core'
 import {
   ServeStaticModuleAsyncOptions,
   ServeStaticModuleOptions,
-  ServeStaticModuleOptionsFactory,
-} from './interfaces/serve-static-options.interface';
-import { AbstractLoader } from './loaders/abstract.loader';
-import { SERVE_STATIC_MODULE_OPTIONS } from './serve-static.constants';
-import { serveStaticProviders } from './serve-static.providers';
+  ServeStaticModuleOptionsFactory
+} from './interfaces/serve-static-options.interface'
+import { AbstractLoader } from './loaders/abstract.loader'
+import { SERVE_STATIC_MODULE_OPTIONS } from './serve-static.constants'
+import { serveStaticProviders } from './serve-static.providers'
 
 @Module({
-  providers: [...serveStaticProviders],
+  providers: [...serveStaticProviders]
 })
 export class ServeStaticModule implements OnModuleInit {
   constructor(
     @Inject(SERVE_STATIC_MODULE_OPTIONS)
     private readonly ngOptions: ServeStaticModuleOptions[],
     private readonly loader: AbstractLoader,
-    private readonly httpAdapterHost: HttpAdapterHost,
+    private readonly httpAdapterHost: HttpAdapterHost
   ) {}
 
   public static forRoot(...options: ServeStaticModuleOptions[]): DynamicModule {
@@ -32,61 +26,51 @@ export class ServeStaticModule implements OnModuleInit {
       providers: [
         {
           provide: SERVE_STATIC_MODULE_OPTIONS,
-          useValue: options,
-        },
-      ],
-    };
+          useValue: options
+        }
+      ]
+    }
   }
 
-  public static forRootAsync(
-    options: ServeStaticModuleAsyncOptions,
-  ): DynamicModule {
+  public static forRootAsync(options: ServeStaticModuleAsyncOptions): DynamicModule {
     return {
       module: ServeStaticModule,
       imports: options.imports,
-      providers: [
-        ...this.createAsyncProviders(options),
-        ...(options.extraProviders || []),
-      ],
-      exports: [SERVE_STATIC_MODULE_OPTIONS],
-    };
+      providers: [...this.createAsyncProviders(options), ...(options.extraProviders || [])],
+      exports: [SERVE_STATIC_MODULE_OPTIONS]
+    }
   }
 
-  private static createAsyncProviders(
-    options: ServeStaticModuleAsyncOptions,
-  ): Provider[] {
+  private static createAsyncProviders(options: ServeStaticModuleAsyncOptions): Provider[] {
     if (options.useExisting || options.useFactory) {
-      return [this.createAsyncOptionsProvider(options)];
+      return [this.createAsyncOptionsProvider(options)]
     }
     return [
       this.createAsyncOptionsProvider(options),
       {
         provide: options.useClass,
-        useClass: options.useClass,
-      },
-    ];
+        useClass: options.useClass
+      }
+    ]
   }
 
-  private static createAsyncOptionsProvider(
-    options: ServeStaticModuleAsyncOptions,
-  ): Provider {
+  private static createAsyncOptionsProvider(options: ServeStaticModuleAsyncOptions): Provider {
     if (options.useFactory) {
       return {
         provide: SERVE_STATIC_MODULE_OPTIONS,
         useFactory: options.useFactory,
-        inject: options.inject || [],
-      };
+        inject: options.inject || []
+      }
     }
     return {
       provide: SERVE_STATIC_MODULE_OPTIONS,
-      useFactory: async (optionsFactory: ServeStaticModuleOptionsFactory) =>
-        optionsFactory.createLoggerOptions(),
-      inject: [options.useExisting || options.useClass],
-    };
+      useFactory: async (optionsFactory: ServeStaticModuleOptionsFactory) => optionsFactory.createLoggerOptions(),
+      inject: [options.useExisting || options.useClass]
+    }
   }
 
   public async onModuleInit() {
-    const httpAdapter = this.httpAdapterHost.httpAdapter;
-    this.loader.register(httpAdapter, this.ngOptions);
+    const httpAdapter = this.httpAdapterHost.httpAdapter
+    this.loader.register(httpAdapter, this.ngOptions)
   }
 }

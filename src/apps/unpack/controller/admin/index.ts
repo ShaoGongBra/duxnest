@@ -5,10 +5,10 @@ import { Controller } from '@/duxnest'
 export class UnpackAdminController {
   @Get(':id')
   index(@Param('id') id: string) {
-    return id;
+    return id
   }
   @Get('test/:id')
   test() {
-    return '测试';
+    return '测试'
   }
 }
