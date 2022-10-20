@@ -1,3 +1,3 @@
-const a = () => {
-  111111
+export default () => {
+  return <div>首页</div>
 }

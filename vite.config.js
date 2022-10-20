@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import chokidar from 'chokidar'
-import { resolve } from 'path'
+import { resolve, sep } from 'path'
+import { writeFileSync } from 'fs'
 
 const pages = () => {
   const createRouter = watcher => {
@@ -10,7 +11,7 @@ const pages = () => {
       .filter(key => watched[key].some(v => v.endsWith('.jsx')))
       .map(key =>
         watched[key].map(v => {
-          let paths = key.split('\\')
+          let paths = key.split(sep)
           paths = [...paths.slice(paths.length - 4), v.replace('.jsx', '')]
           paths.splice(1, 1)
           return paths
@@ -20,7 +21,7 @@ const pages = () => {
       .map(item => {
         const name = item.map(key => key.charAt(0).toUpperCase() + key.slice(1)).join('')
         return [
-          `import ${name} from '../../../apps/${item[0]}/view/${item[1]}/${item[2]}/${item[3]}'`,
+          `import ${name} from '../../apps/${item[0]}/view/${item[1]}/${item[2]}/${item[3]}'`,
           `'${item.join('/')}': ${name}`
         ]
       })
@@ -28,8 +29,10 @@ const pages = () => {
 
 export const routerList = {
   ${list.map(v => v[1]).join(',\n  ')}
-}`
-    console.log('监听', template)
+}
+`
+    // console.log('监听', template)
+    writeFileSync('./src/client/router/RouterList.jsx', template, { encoding: 'utf8' })
   }
   return {
     name: 'vite-plugin-duxnest-page',
@@ -39,15 +42,14 @@ export const routerList = {
         ignored: [],
         persistent: true
       })
-      watcher.on('add', file => {
-        console.log('add', file)
+      watcher.on('add', () => {
+        // console.log('add', file)
         createRouter(watcher)
       })
-      watcher.on('unlink', file => {
-        console.log('unlink', file)
+      watcher.on('unlink', () => {
+        // console.log('unlink', file)
         createRouter(watcher)
       })
-      createRouter(watcher)
     }
   }
 }
