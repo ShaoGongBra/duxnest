@@ -22,17 +22,17 @@ const pages = () => {
         const name = item.map(key => key.charAt(0).toUpperCase() + key.slice(1)).join('')
         return [
           `import ${name} from '../../apps/${item[0]}/view/${item[1]}/${item[2]}/${item[3]}'`,
-          `'${item.join('/')}': ${name}`
+          `'/${item.join('/')}': ${name}`
         ]
       })
     const template = `${list.map(v => v[0]).join('\n')}
 
-export const routerList = {
+export const routeList = {
   ${list.map(v => v[1]).join(',\n  ')}
 }
 `
     // console.log('监听', template)
-    writeFileSync('./src/client/router/RouterList.jsx', template, { encoding: 'utf8' })
+    writeFileSync('./src/client/route/RouteList.jsx', template, { encoding: 'utf8' })
   }
   return {
     name: 'vite-plugin-duxnest-page',

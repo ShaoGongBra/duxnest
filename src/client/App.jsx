@@ -1,13 +1,10 @@
 import React from 'react'
-import { routerList } from './router/RouterList'
+import Route from './route/Route'
 
 export default function App() {
   return (
     <div className="App">
-      <div>初始化skdjhdf</div>
-      {Object.values(routerList).map(Comp => (
-        <Comp />
-      ))}
+      <Route />
     </div>
   )
 }

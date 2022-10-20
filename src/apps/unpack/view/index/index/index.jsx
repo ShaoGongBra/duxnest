@@ -1,3 +1,9 @@
+import { Navigation } from '../../../../../client/route/Route'
+
 export default () => {
-  return <div>项目打包器组件修改测试</div>
+  return (
+    <div>
+      <Navigation type="back">返回</Navigation>
+    </div>
+  )
 }

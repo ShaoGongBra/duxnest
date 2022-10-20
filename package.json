@@ -41,6 +41,7 @@
     "joi": "^17.6.3",
     "mysql2": "^2.3.3",
     "point-of-view": "^6.3.0",
+    "qs": "^6.11.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "reflect-metadata": "^0.1.13",
