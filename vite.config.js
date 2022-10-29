@@ -5,7 +5,9 @@ import { resolve, sep } from 'path'
 import { writeFileSync } from 'fs'
 
 const pages = () => {
+  let mode = 'development'
   const createRouter = watcher => {
+    console.log('修改路由')
     const watched = watcher.getWatched()
     const list = Object.keys(watched)
       .filter(key => watched[key].some(v => v.endsWith('.jsx')))
@@ -19,13 +21,18 @@ const pages = () => {
       )
       .flat()
       .map(item => {
-        const name = item.map(key => key.charAt(0).toUpperCase() + key.slice(1)).join('')
+        const pageName = item.map(key => key.charAt(0).toUpperCase() + key.slice(1)).join('')
+        const pagePath = `'../../apps/${item[0]}/view/${item[1]}/${item[2]}/${item[3]}'`
         return [
-          `import ${name} from '../../apps/${item[0]}/view/${item[1]}/${item[2]}/${item[3]}'`,
-          `'/${item.join('/')}': ${name}`
+          mode === 'development'
+            ? `import ${pageName} from ${pagePath}`
+            : `const ${pageName} = lazy(() => import(${pagePath}))`,
+          `'/${item.join('/')}': ${pageName}`
         ]
       })
-    const template = `${list.map(v => v[0]).join('\n')}
+    const template = `import { lazy } from 'react'
+
+${list.map(v => v[0]).join('\n')}
 
 export const routeList = {
   ${list.map(v => v[1]).join(',\n  ')}
@@ -37,6 +44,9 @@ export const routeList = {
   return {
     name: 'vite-plugin-duxnest-page',
     apply: 'serve',
+    config(config, env) {
+      mode = env.mode
+    },
     buildStart() {
       const watcher = chokidar.watch('./src/apps/*/view/*/*/*.jsx', {
         ignored: [],
