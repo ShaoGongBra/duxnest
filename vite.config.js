@@ -5,9 +5,14 @@ import { resolve, sep } from 'path'
 import { writeFileSync } from 'fs'
 
 const pages = () => {
+  // 当前是开发模式还是调试模式
   let mode = 'development'
+  // 监听程序是否加载完成
+  let ready = false
   const createRouter = watcher => {
-    console.log('修改路由')
+    if (!ready) {
+      return
+    }
     const watched = watcher.getWatched()
     const list = Object.keys(watched)
       .filter(key => watched[key].some(v => v.endsWith('.jsx')))
@@ -23,11 +28,20 @@ const pages = () => {
       .map(item => {
         const pageName = item.map(key => key.charAt(0).toUpperCase() + key.slice(1)).join('')
         const pagePath = `'../../apps/${item[0]}/view/${item[1]}/${item[2]}/${item[3]}'`
+
+        const routePath = item
+          .reduceRight((prev, current) => {
+            if (prev.length || current !== 'index') {
+              prev.unshift(current)
+            }
+            return prev
+          }, [])
+          .join('/')
         return [
           mode === 'development'
             ? `import ${pageName} from ${pagePath}`
             : `const ${pageName} = lazy(() => import(${pagePath}))`,
-          `'/${item.join('/')}': ${pageName}`
+          `'/${routePath}': ${pageName}`
         ]
       })
     const template = `import { lazy } from 'react'
@@ -52,12 +66,16 @@ export const routeList = {
         ignored: [],
         persistent: true
       })
-      watcher.on('add', () => {
-        // console.log('add', file)
+      watcher.on('ready', () => {
+        ready = true
         createRouter(watcher)
       })
-      watcher.on('unlink', () => {
-        // console.log('unlink', file)
+      watcher.on('add', file => {
+        console.log('add', file)
+        createRouter(watcher)
+      })
+      watcher.on('unlink', file => {
+        console.log('unlink', file)
         createRouter(watcher)
       })
     }
