@@ -26,9 +26,14 @@ const pages = () => {
       )
       .flat()
       .map(item => {
-        const pageName = item.map(key => key.charAt(0).toUpperCase() + key.slice(1)).join('')
         const pagePath = `'../../apps/${item[0]}/view/${item[1]}/${item[2]}/${item[3]}'`
 
+        // 将板块排在第一个
+        item.unshift(...item.splice(1, 1))
+        if (item[0] === 'index') {
+          item.splice(0, 1)
+        }
+        const pageName = item.map(key => key.charAt(0).toUpperCase() + key.slice(1)).join('')
         const routePath = item
           .reduceRight((prev, current) => {
             if (prev.length || current !== 'index') {
