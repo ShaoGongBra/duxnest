@@ -1,5 +1,6 @@
 import { duxNestAppInstall } from '@/duxnest'
-import unpack from './unpack'
-import index from './index/index'
+import unpack from './unpack/app'
+import index from './index/app'
+import user from './user/app'
 
-duxNestAppInstall(unpack, index)
+duxNestAppInstall(unpack, index, user)
